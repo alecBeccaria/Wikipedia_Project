@@ -1,149 +1,61 @@
-import xml.etree.ElementTree as et
-import pandas as pd
-import csv
+list of broken radius:
 
-file = 'customers.xml'
-customer_rows = []
-order_rows = []
-line_rows = []
-customer_cols = ["customerId", "customerName", "email", "age"]
-order_cols = ["orderId", "customerId", "total"]
+50 Persei
+radius       =
 
-ns = '{http://schemas.datacontract.org/2004/07/DataGenerator}'
+2 Persei
+radius =
+68 Cygni
+radius =
 
+56 Cygni
+radius   =
 
-def parse_customers():
-    root = et.iterparse(file)
-    print('parsed.')
+Omicron Gruis
+radius =
 
-    for ev, el in root:
-        # element is a whole element
-        if el.tag == ns + 'Customer':
-            customer_id = el.findall(ns + 'CustomerId')[0].text
-            customer_name = el.findall(ns + 'Name')[0].text
-            customer_email = el.findall(ns + 'Email')[0].text
-            customer_age = el.findall(ns + 'Age')[0].text
-            print(f"customer id: {customer_id}, name: {customer_name}, email: {customer_email}, age: {customer_age}")
-            customer_rows.append({customer_cols[0]: customer_id, customer_cols[1]: customer_name,
-                                  customer_cols[2]: customer_email, customer_cols[3]: customer_age})
-            el.clear()
-    df_customers = pd.DataFrame(customer_rows, columns=customer_cols)
-    df_customers.to_csv(r'customers.csv', index=False)
+RZ Gruis
+radius=
 
+Sigma Pegasi
+radius =
 
-def parse_orders():
-    root = et.iterparse(file)
-    print('parsed.')
-    for ev, el in root:
-        # element is a whole element
-        if el.tag == ns + 'Customer':
-            order_list = el.find(ns + 'Orders')
-            orders = order_list.findall(ns + 'Order')
-            # for orders in el.findall(ns + 'Orders'):
+HD 220773
+radius      =
 
-            for order in orders:
-                order_customer_id = order.find(ns + 'CustomerId').text
-                order_id = order.find(ns + 'OrderId').text
-                order_total = order.find(ns + 'Total').text
-                order_rows.append(
-                    {order_cols[0]: order_id, order_cols[1]: order_customer_id, order_cols[2]: order_total})
+Phi Pegasi
+radius =
 
-                order.clear()
-                print(f"order id: {order_id}")
-            el.clear()
-            order_list.clear()
-    orders.clear()
+Tau7 Eridani
+radius =
 
-    df_orders = pd.DataFrame(order_rows, columns=order_cols)
-    df_orders.to_csv(r'orders.csv', index=False)
+Kepler-30
+radius =
+Kepler-27
+radius =
 
+Kepler-28
+radius =
+Kepler-43
+radius =
+Kepler-44
+radius =
+Kepler-45
+radius =
+AH Velorum
+radius =
 
-def parse_lines2():
-    root = et.iterparse(file)
-    line_cols = ["lineId", "orderId", "qty", "price", "lineTotal", "productId"]
-    for ev, el in root:
-        if el.tag == ns + 'Order':
+Z Ursae Minoris
+radius =
 
-            for order_el in el.iter(ns + 'Order'):
-                order_id = ""
-                if order_el.tag == ns + 'OrderId':
-                    order_id = order_el.find(ns + 'OrderId').text
+Mu Pictoris
+radius =
 
-                for order_line in order_el.iter(ns + 'OrderLine'):
-                    line_id = order_line.find(ns + 'OrderLineId').text
-                    line_qty = order_line.find(ns + 'Qty').text
-                    line_price = order_line.find(ns + 'Price').text
-                    line_total = order_line.find(ns + 'Total').text
-                    line_product_id = order_line.find(ns + 'ProductId').text
+AE Pictoris
+radius      =
 
-                    line_rows.append({line_cols[0]: line_id, line_cols[1]: order_id, line_cols[2]: line_qty,
-                                      line_cols[3]: line_price, line_cols[4]: line_total,
-                                      line_cols[5]: line_product_id})
-                    print(line_id)
-                    order_line.clear()
-                order_el.clear()
-            el.clear()
-    df_lines = pd.DataFrame(line_rows, columns=line_cols)
-    print(df_lines)
-    df_lines.to_csv(r'lines.csv', index=False)
+HR 5401
+radius =
 
-
-def parse_lines():
-    root = et.iterparse(file)
-    line_cols = ["lineId", "orderId", "qty", "price", "lineTotal", "productId"]
-    with open('lines.csv', 'w') as csvfile:
-        row_writer = csv.writer(csvfile)
-        row_writer.writerow(line_cols)
-    for ev, el in root:
-        if el.tag == ns + 'Orders':
-
-            order_list = el.find(ns + 'Orders')
-
-            # orders = order_list.findall(ns + 'Order')
-            orders = el.findall(ns + 'Order')
-
-            for order in orders:
-                line_list = order.find(ns + 'Lines')
-                lines = line_list.findall(ns + 'OrderLine')
-                # lines = line_list.iter(ns + 'OrderLine')
-
-                for order_line in lines:
-                    line_id = order_line.find(ns + 'OrderLineId').text
-                    line_qty = order_line.find(ns + 'Qty').text
-                    line_price = order_line.find(ns + 'Price').text
-                    line_total = order_line.find(ns + 'Total').text
-                    line_product_id = order_line.find(ns + 'ProductId').text
-                    order_id = order.find(ns + 'OrderId').text
-
-                    with open('lines.csv', 'a') as csvfile:
-                        row_writer = csv.writer(csvfile)
-                        row_writer.writerow([line_id, order_id, line_qty, line_price, line_total, line_product_id])
-
-                    # line_rows.append({line_cols[0]: line_id, line_cols[1]: order_id, line_cols[2]: line_qty,
-                    #                   line_cols[3]: line_price, line_cols[4]: line_total,
-                    #                   line_cols[5]: line_product_id})
-
-                    print(f"line id: {line_id}")
-                    order_line.clear()
-                    del order_line, line_id, line_qty, line_price, line_total, line_product_id, order_id
-                # lines.clear()
-                line_list.clear()
-
-                order.clear()
-                del order
-            el.clear()
-            del el
-
-    # df_lines = pd.DataFrame(line_rows, columns=line_cols)
-    # print(df_lines)
-    # df_lines.to_csv(r'lines.csv', index=False)
-
-
-def main():
-    # parse_customers()
-    # parse_orders()
-    parse_lines()
-
-
-if __name__ == "__main__":
-    main()
+2 Piscis Austrini
+radius   =

@@ -10,9 +10,11 @@ import certifi
 import json
 
 constRegex = "\[\[.*\(constellation\)\]\]"
-starboxRegex = "^\{\{Starbox begin(.|\n)*?\}\}((.|\n)*?)\{\{Starbox end\}\}"
-constellRegex = "(constell = )\[\[(\w*)"
-
+starboxRegex = "\{\{[s|S]tarbox begin([.|\s]*.*)[\n]?\}\}((.|\n)*?)\{\{[s|S]tarbox end\}\}"
+constellRegex = "(constell[\s=]*)\[\[(\w*)"
+massRegex = "[M|m]ass\s*=\s*(\s*{{[v|V]al\|)*(\d*\.*\d*)"
+radiusRegex = "[r|R]adius\s*=\s*({{[v|V]al\|)*(\d*\.*\d*)"
+temperatureRegex = "temperature\s*=\s*({{V*|v*al\|)*(\d*,*\d*)"
 
 def xml_parser(xmlFile):
     wikiList = []
@@ -43,14 +45,38 @@ def xml_parser(xmlFile):
                 if elem.text != None:
                     match = re.search(starboxRegex, elem.text)
                     if match != None:
+                        constell = re.search(constellRegex, elem.text)
+                        mass = re.search(massRegex, elem.text)
+                        radius = re.search(radiusRegex, elem.text)
+                        temperature = re.search(temperatureRegex, elem.text)
                         starDic['title'] = title
-                        print(starDic)
-                        # constell = re.search(constellRegex, elem.text)
-                        # if constell != None:
-                        #     starDic['title'] = title
-                        #     starDic['constellation'] = constell.group(2)
-                        #     wikiList.append(starDic)
-                        #     print(starDic)
+
+
+                        isGood = True
+                        if constell and mass and radius and temperature != None:
+                        # print(title)
+                        # print("\n====================\n"+elem.text+"\n=======================\n")
+
+                            starDic['constellation'] = constell.group(2)
+                            if mass.group(2) != '' or ' ' or None:
+                                #print(elem.text)
+                                starDic['mass'] = mass.group(2)
+                                if starDic['mass'] == '':
+                                    starDic['mass'] = "Not Given"
+                                print(starDic['mass'])
+
+                            if radius.group(2) != "" or None:
+                                starDic['radius'] = radius.group(2)
+                            else:
+                                starDic['radius'] = "Not Given"
+
+                            if temperature.group(2) != '' or None:
+                                starDic['temperature'] = temperature.group(2)
+                            else:
+                                starDic['temperature'] = 'Not Given'
+                            wikiList.append(starDic)
+
+
 
 
 
