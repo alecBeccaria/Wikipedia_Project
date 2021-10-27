@@ -107,7 +107,20 @@ def connDB():
 
 
 
-
+def importJSON():
+    ca = certifi.where()
+    connectionString = 'mongodb+srv://user:bob@cluster0.mpjye.mongodb.net/?retryWrites=true&w=majority'
+    client = db.MongoClient(connectionString, tlsCAFILE=ca)
+    connection = client['Wookie']
+    server = client._get_server_session()
+    database = client.get_database('Wookie')
+    collection = connection['WikiShiz']
+    with open('data.json') as data:
+        file_data = json.load(data)
+    if isinstance(file_data, list):
+        collection.insert_many(file_data)
+    else:
+        collection.insert_one(file_data)
 
 
 
@@ -116,5 +129,6 @@ if __name__ == "__main__":
     # testConn()
     # xmlFile = open('customers.xml', 'r')
     connDB()
-    xml_parser('enwiki-latest-pages-articles22.xml-p41496246p42996245')
+    #xml_parser('Wiki2.xml')
+    importJSON()
     # sql_dbms(customers)
